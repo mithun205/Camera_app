@@ -325,12 +325,12 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                           },
                         ),
                         // System Gallery Tab
-                        // Center(
-                        //   child: ElevatedButton(
-                        //     onPressed: pickImage,
-                        //     child: const Text("Access Gallery"),
-                        //   ),
-                        // ),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: pickImage,
+                            child: const Text("Access Gallery"),
+                          ),
+                        ),
                         
                       ],
                     ),
