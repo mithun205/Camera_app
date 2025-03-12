@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 
 import 'package:flutter/material.dart';
@@ -12,8 +14,9 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  
   final List<CameraDescription> cameras;
-  const MyApp({super.key, required this.cameras});
+   MyApp({super.key, required this.cameras});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
         cameras: cameras,
       ),
       // routes: {
-      //   "/gallery":(context)=> GalleryPage(imagesList:[] )
+      //   "/gallery":(context)=> GalleryPage(imagesList:imagesList )
       // },
     );
     

@@ -39,8 +39,9 @@ dependencies:
   external_path: ^1.0.3
   media_scanner: ^2.1.0
   image_picker: ^0.8.9
-  # gallery_picker:
+  gallery_picker:
   photo_gallery: 
+  file_picker: ^9.0.2
 
 dev_dependencies:
   flutter_test:

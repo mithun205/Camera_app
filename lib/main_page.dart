@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 
 import 'package:external_path/external_path.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/gallery.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,32 +26,67 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
   bool isFlashOn = false;
   bool isRearCamera = true;
-
+  
   
   bool isTabBarVisible = false;
 
   
   late TabController _tabController;
 
-  // for image selection
-  File? _SelectedImage;
+  // for image selection using image_picker
+  // File? _SelectedImage;
 
-  Future pickImage() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  // Future pickImage() async {
+  //   final returnedImage =
+  //       await ImagePicker().pickMedia(
 
-    if (returnedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text("Please select any image"))),
-      );
-      return;
-    }
+  //       );
 
-    setState(() {
-      _SelectedImage = File(returnedImage.path);
-      imagesList.add(_SelectedImage!); // Add the selected image to the list
-    });
+  //   if (returnedImage == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Center(child: Text("Please select any image"))),
+  //     );
+  //     return;
+  //   }
+
+  //   setState(() {
+  //     _SelectedImage = File(returnedImage.path);
+  //     imagesList.add(_SelectedImage!); // Add the selected image to the list
+  //   });
+  // }
+
+  
+  
+//for image selection using file_picker
+File? _SelectedImage;
+
+Future pickImage() async {
+  final result = await FilePicker.platform.pickFiles(
+    allowMultiple: true,
+    type: FileType.image, 
+    //allowedExtensions: ["png"]
+
+  );
+
+  if (result == null || result.files.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Center(child: Text("Please select at least one image"))),
+    );
+    return;
   }
+
+  setState(() {
+    
+
+    for (var file in result.files) {
+      if (file.path != null) {
+        imagesList.add(File(file.path!));
+      }
+    }
+  });
+}
+
+   
 
   Future<File> saveImage(XFile image) async {
     final downlaodPath = await ExternalPath.getExternalStoragePublicDirectory(
@@ -133,14 +169,21 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         actions: [
           IconButton(
             icon: const Icon(Icons.photo_library),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GalleryPage(imagesList: imagesList),
-                ),
-              );
-            },
+            onPressed: () async {
+  final updatedList = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => GalleryPage(imagesList: imagesList),
+    ),
+  );
+
+  if (updatedList != null) {
+    setState(() {
+      imagesList = updatedList; // Update the UI with the new list
+    });
+  }
+},
+
           ),
         ],
       ),
@@ -206,78 +249,193 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           //   ),
           // ),
 
-          // selfie an light
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5, top: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFlashOn = !isFlashOn;
-                        });
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
+          //selfie an light
+          // SafeArea(
+          //   child: Align(
+          //     alignment: Alignment.topRight,
+          //     child: Padding(
+          //       padding: const EdgeInsets.only(right: 5, top: 10),
+          //       child: Column(
+          //         //mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           GestureDetector(
+          //             onTap: () {
+          //               setState(() {
+          //                 isFlashOn = !isFlashOn;
+          //               });
+          //             },
+          //             child: Container(
+          //               decoration: const BoxDecoration(
                           
-                          shape: BoxShape.circle,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: isFlashOn
-                              ? const Icon(
-                                  Icons.flash_on,
-                                  color: Colors.white,
-                                  size: 30,
-                                )
-                              : const Icon(
-                                  Icons.flash_off,
-                                  color: Colors.white,
-                                  size: 30,
+          //                 shape: BoxShape.circle,
+          //               ),
+          //               child: Padding(
+          //                 padding: const EdgeInsets.all(10),
+          //                 child: isFlashOn
+          //                       ? Container(
+          //                       height: 50,
+          //                       width: 50,
+          //                       decoration: BoxDecoration(
+                                 
+          //                         border: Border.all(color: Colors.grey),
+          //                         borderRadius: BorderRadius.circular(50)
+          //                       ),
+          //                       child: const Icon(
+          //                           Icons.flash_on,
+          //                           color: Colors.white,
+          //                           size: 30,
+          //                         ))
+          //                       : Container(
+          //                       height: 50,
+          //                       width: 50,
+          //                       decoration: BoxDecoration(
+                                 
+          //                         border: Border.all(color: Colors.grey),
+          //                         borderRadius: BorderRadius.circular(50)
+          //                       ),
+          //                       child: const Icon(
+          //                           Icons.flash_off,
+          //                           color: Colors.white,
+          //                           size: 30,
+          //                         ),)
+          //               ),
+          //             ),
+          //           ),
+          //           SizedBox(
+          //             height: 10,
+          //           ),
+          //           // Positioned(
+          //           //   bottom: 180,
+          //           //   child: GestureDetector(
+          //           //     onTap: () {
+          //           //       setState(() {
+          //           //         isRearCamera = !isRearCamera;
+          //           //       });
+          //           //       isRearCamera ? startCamera(0) : startCamera(1);
+          //           //     },
+          //           //     child: Padding(
+          //           //       padding: const EdgeInsets.all(10),
+          //           //       child: isRearCamera
+          //           //           ? const Icon(
+          //           //               Icons.cameraswitch_outlined,
+          //           //               color: Colors.white,
+          //           //               size: 30,
+          //           //             )
+          //           //           : Container(
+          //           //             height: 50,
+          //           //             width: 50,
+          //           //             decoration: BoxDecoration(
+          //           //               color: Colors.grey,
+          //           //               border: Border.all(color: Colors.grey),
+          //           //               borderRadius: BorderRadius.circular(50)
+          //           //             ),
+          //           //             child: const Icon(
+          //           //                 Icons.cameraswitch_sharp,
+          //           //                 color: Colors.white,
+          //           //                 size: 30,
+          //           //               ),
+          //           //           ),
+          //           //     ),
+          //           //   ),
+          //           // )
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          // flash button
+          Positioned(
+            bottom: 220,
+            left: 280,
+            child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isFlashOn = !isFlashOn;
+                          });
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: isFlashOn
+                                ? Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                 
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(50)
                                 ),
+                                child: const Icon(
+                                    Icons.flash_on,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ))
+                                : Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                 
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(50)
+                                ),
+                                child: const Icon(
+                                    Icons.flash_off,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),)
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isRearCamera = !isRearCamera;
-                        });
-                        isRearCamera ? startCamera(0) : startCamera(1);
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          
-                          shape: BoxShape.circle,
-                        ),
+          ),
+          //camera button
+          Positioned(
+                      bottom: 8,
+                      left: 280,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isRearCamera = !isRearCamera;
+                          });
+                          isRearCamera ? startCamera(0) : startCamera(1);
+                        },
                         child: Padding(
                           padding: const EdgeInsets.all(10),
                           child: isRearCamera
-                              ? const Icon(
-                                  Icons.camera_rear,
-                                  color: Colors.white,
-                                  size: 30,
-                                )
-                              : const Icon(
-                                  Icons.camera_front,
-                                  color: Colors.white,
-                                  size: 30,
+                              ? Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                 
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(50)
                                 ),
+                                child: const Icon(
+                                  Icons.cameraswitch_outlined,
+                                  color: Colors.white,
+                                  size: 30,
+                                ))
+                              : Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(50)
+                                ),
+                                child: const Icon(
+                                    Icons.cameraswitch_sharp,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                              ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
+                    ),
 
           // tab  bar
           Visibility(
@@ -290,8 +448,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                   TabBar(
                     controller: _tabController,
                     indicatorColor: Colors.white,
+                    labelColor: Colors.white,
                     tabs: const [
-                      Tab(text: 'Recent Images'),
+                      Tab(text: 'Recent Images',),
                       Tab(text: 'System Gallery'),
                     ],
                   ),
