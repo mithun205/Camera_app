@@ -42,6 +42,10 @@ dependencies:
   gallery_picker:
   photo_gallery: 
   file_picker: ^9.0.2
+  permission_handler: ^11.4.0
+  open_filex:
+  flutter_cache_manager:
+  # content_resolver: ^0.0.1
 
 dev_dependencies:
   flutter_test:
